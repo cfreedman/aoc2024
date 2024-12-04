@@ -11,24 +11,28 @@ def main():
 
     total_safe = 0
     for report in reports:
-        increasing, safe, error_count = None, True, 0
-        for i in range(1, len(report)):
-            if abs(report[i] - report[i - 1]) < 1 or abs(report[i] - report[i - 1]) > 3:
-                error_count += 1
-            elif (report[i] > report[i - 1] and increasing == -1) or (report[i] < report[i - 1] and increasing == 1):
-                error_count += 1
-
-            if error_count > 1:
-                safe = False
+        for i in range(len(reports)):
+            if safe_report(report[:i] + report[i + 1:]):
+                total_safe += 1
                 break
-
-            if not increasing:
-                increasing = 1 if report[i] > report[i - 1] else -1
-        
-        total_safe += 1 if safe else 0
     
     print(total_safe)
     return total_safe
+
+def safe_report(report):
+    increasing, safe = None, True
+    for i in range(1, len(report)):
+        if abs(report[i] - report[i - 1]) < 1 or abs(report[i] - report[i - 1]) > 3:
+            safe = False
+            break
+        elif (report[i] > report[i - 1] and increasing == -1) or (report[i] < report[i - 1] and increasing == 1):
+            safe = False
+            break
+
+        if not increasing:
+            increasing = 1 if report[i] > report[i - 1] else -1
+
+    return safe
 
 if __name__ == "__main__":
     main()

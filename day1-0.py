@@ -1,7 +1,7 @@
 import os
 
 script_dir = os.path.dirname(__file__)
-file_path = os.path.join(script_dir, "inputs/day1-0")
+file_path = os.path.join(script_dir, "inputs/day1")
 
 
 def main():
