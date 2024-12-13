@@ -27,7 +27,7 @@ def transform_stones(stones):
 
     return new_stones
 
-for _ in range(75):
+for _ in range(25):
     stones = transform_stones(stones)
 
 print(len(stones))
