@@ -45,14 +45,15 @@ def fence_price(farm):
     visited = set()
 
     total = 0
+    region_count = 0
     for i in range(rows):
         for j in range(cols):
             if (i,j) in visited:
                 continue
-
+            region_count += 1
             perimeter,area = explore_region(i,j,farm,visited)
             total += perimeter*area
-
+    print(f'Region count: {region_count}')
     return total
 
 print(fence_price(farm))
