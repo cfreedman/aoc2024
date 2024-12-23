@@ -1,3 +1,4 @@
+import heapq
 import os
 
 script_dir = os.path.dirname(__file__)
@@ -7,6 +8,19 @@ maze = []
 with open(file_path) as f:
     for line in f:
         maze.append(list(line.rstrip()))
+
+rows, cols = len(maze), len(maze[0])
+
+for i in range(rows):
+    for j in range(cols):
+        if maze[i][j] == "S":
+            start = (i,j)
+        if maze[i][j] == "E":
+            end = (i,j)
+
+print(maze)
+print(start)
+print(end)
 
 def facing_to_direction(facing):
     if facing == "^":
@@ -35,46 +49,40 @@ def opposite_facing(facing):
         return "^"
     return ">"
 
-class Maze:
-    def __init__(self, maze):
-        self.rows, self.cols = len(maze), len(maze[0])
-        self.maze = maze
-        self.reindeer_position = None
-        self.reindeer_facing = None
-        self.end = None
-        self.scores_cache = {}
+def lowest_score(maze, curr_pos, curr_facing):
+    visited = {(curr_pos, ">"): 0}
+    heap = [(0, curr_pos, curr_facing)]
+    heapq.heapify(heap)
+    score = float('inf')
 
-        for i in range(self.rows):
-            for j in range(self.cols):
-                if maze[i][j] == "S":
-                    self.reindeer_position = (i,j)
-                    self.reindeer_facing = ">" 
-                elif maze[i][j] == "E":
-                    self.end == (i,j)
+    while heap:
+        curr_score, curr_pos, curr_facing = heapq.heappop(heap)
+        print(curr_score, curr_pos, curr_facing)
+        r, c = curr_pos
+        if maze[r][c] == "E":
+            return curr_score
+        dr, dc = facing_to_direction(curr_facing)
+        if (maze[r + dr][c + dc] != "#" and ((r + dr, c + dc), curr_facing) not in visited) or (((r + dr, c + dc), curr_facing) in visited and visited[((r + dr, c + dc), curr_facing)] > curr_score + 1):
+            heapq.heappush(heap, (curr_score + 1, (r + dr, c + dc), curr_facing))
+            visited[((r + dr, c + dc), curr_facing)] = curr_score + 1
+        if (curr_pos, turn_facing(curr_facing, True)) not in visited or visited[(curr_pos, turn_facing(curr_facing, True))] > curr_score + 1000:
+            heapq.heappush(heap, (curr_score + 1000, curr_pos, turn_facing(curr_facing, True)))
+            visited[((r, c), turn_facing(curr_facing, True))] = curr_score + 1000
+        if (curr_pos, turn_facing(curr_facing, False)) not in visited or visited[(curr_pos, turn_facing(curr_facing, False))] > curr_score + 1000:
+            heapq.heappush(heap, (curr_score + 1000, curr_pos, turn_facing(curr_facing, False)))
+            visited[((r, c), turn_facing(curr_facing, False))] = curr_score + 1000
 
-    def calculate_lowest_score(self, curr_pos, curr_facing):
-        if curr_pos == self.end:
-            return 0
-        if (curr_pos, curr_facing) in self.scores_cache:
-            return self.scores_cache[(curr_pos, curr_facing)]
-        
-        visited = set()
-        def dfs_traversal(curr_pos, curr_facing):
-            if (curr_pos, curr_facing) in visited or (curr_pos, opposite_facing(curr_facing)) in visited:
-                return float('inf')
-            
-            forward = clockwise = counterclockwise = float("inf")
-            r,c = curr_pos
-            dr,dc = facing_to_direction(curr_facing)
-            if self.maze[r + dr][c + dc] != "#" and ((r + dr, c + dc), curr_facing) not in visited:
-                forward = dfs_traversal((r + dr, c + dc), curr_facing)
-            if 
-            
+    return score
 
+print(lowest_score(maze, start, ">"))
 
-    
-reindeer_maze = Maze(maze)
-print(reindeer_maze.calculate_lowest_score(reindeer_maze.reindeer_position, reindeer_maze.reindeer_facing))
+def test_maze():
+    maze = [["#","#","#","#","#"],["#",".","#","E","#"],["#",".",".",".","#"],["#",".",".",".","#"],["#","#","#","#","#"]]
+
+    print(lowest_score(maze, (3,1), ">"))
+
+test_maze()
+
 
 
 
